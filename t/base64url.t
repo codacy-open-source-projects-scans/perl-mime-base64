@@ -1,26 +1,28 @@
-#!perl -w
-
 use strict;
 use warnings;
-use Test qw(plan ok);
+use Test::More;
 
 use MIME::Base64 qw(encode_base64url decode_base64url);
 
+if (ord("A") != 65) {
+    plan skip_all => "ASCII-centric test";
+}
+
 my @tests;
+
 while (<DATA>) {
     next if /^#/;
     chomp;
     push(@tests, [split]);
 }
 
-plan tests => 2 * @tests;
-
 for (@tests) {
     my($name, $input, $output) = @$_;
-    print "# $name\n";
     ok(decode_base64url($input), $output);
     ok(encode_base64url($output), $input);
 }
+
+done_testing;
 
 __END__
 # https://github.com/ptarjan/base64url/blob/master/tests.txt
